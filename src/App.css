@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+.custom-subtitle {
+  display: inline-block;
+  background-color: #ff5454; 
+  /* border-radius: 8px;  */
+  padding: 10px;
+}
+
+.two-line-ellipsis {
+  line-height: 1.5em; 
+  height: 3em; 
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-btn-padding {
+  padding: 10px; 
+}
+.two-line-height {
+  line-height: 1.5em; /* Chiều cao dòng */
+  height: 3em; /* Chiều cao tổng cộng cho 2 dòng */
+  overflow: hidden; /* Ẩn phần văn bản vượt quá */
+}
