@@ -2,11 +2,12 @@ import { useEffect, useState, React } from "react";
 import Apis, { endpoints } from "../configs/Apis";
 import { Button, Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import '../App.css'
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Home = () => {
     const [courses, setCourses] = useState(null);
     const [q] = useSearchParams();
+    const nav = useNavigate();
 
     const donvi = "vnD";
     useEffect(() => {
@@ -49,7 +50,10 @@ const Home = () => {
                                     <Card.Text class="two-line-ellipsis">
                                         {c.description}
                                     </Card.Text>
-                                    <Button variant="info" className="m-3 px-4 shadow" >Detail</Button>
+                                    <Button 
+                                        variant="info" 
+                                        className="m-3 px-4 shadow" 
+                                        onClick={() => nav(`/courses/${c.id}`)}>Detail</Button>
                                     <Button variant="danger" className="m-3 shadow" >Purchase</Button>
                                 </Card.Body>
                             </Card>

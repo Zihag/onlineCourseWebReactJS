@@ -4,6 +4,7 @@ import Header from "./layout/Header";
 import Home from "./components/Home";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from "./components/Login";
+import CourseDetail from "./components/CourseDetail";
 
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/login" element={<Login/>}/>
+            <Route path="/courses/:courseId" element={<CourseDetail/>}/>
         </Routes>
         <Footer/>
       </BrowserRouter>
