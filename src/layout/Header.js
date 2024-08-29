@@ -31,11 +31,13 @@ const Header = () => {
             <div class="shadow">
                 <Navbar expand="lg" className="bg-body-tertiary">
                     <Container>
-                        <Navbar.Brand href="#home"><h2>Online Course</h2></Navbar.Brand>
+                        <Navbar.Brand onClick={() => nav(`/`)} style={{
+                                    cursor: 'pointer'}}><h2>Online Course</h2></Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
-                                <Nav.Link href="#home">Home</Nav.Link>
+                                <Nav.Link onClick={() => nav(`/`)} style={{
+                                    cursor: 'pointer'}}>Home</Nav.Link>
                                 <NavDropdown title="Category" id="basic-nav-dropdown">
                                     {categories.map(c => <NavDropdown.Item href="#action/3.1" key={c.id}>{c.name}</NavDropdown.Item>)}
                                 </NavDropdown>
