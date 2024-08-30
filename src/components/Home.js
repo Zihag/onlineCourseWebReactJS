@@ -7,18 +7,40 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Home = () => {
     const [courses, setCourses] = useState(null);
-    const [q] = useSearchParams();
+    const [q, setQ] = useSearchParams();
     const nav = useNavigate();
-
     const donvi = "vnD";
+    const [sortBy, setSortBy] = useState('price'); // Default sorting field
+    const [sortOrder, setSortOrder] = useState('asc'); // Default sorting order
+
     useEffect(() => {
         const loadCourses = async () => {
             try {
                 let e = endpoints['courses'];
 
+                //search
                 let kw = q.get("kw");
                 if (kw !== null)
-                    e = `${e}?kw=${kw}`;
+                    e = `${e.includes('?') ? '&' : '?'}kw=${kw}`;
+
+                //cateFilter
+                let cateId = q.get("cateId");
+                if (cateId !== null) {
+                    e += `${e.includes('?') ? '&' : '?'}cateId=${cateId}`;
+                }
+
+                //price between
+                let fromPrice = q.get("fromPrice");
+                if (fromPrice !== null)
+                    e += `${e.includes('?') ? '&' : '?'}fromPrice=${fromPrice}`;
+
+                let toPrice = q.get("toPrice");
+                if (toPrice !== null)
+                    e += `${e.includes('?') ? '&' : '?'}toPrice=${toPrice}`;
+
+                //sort and order
+                e += `${e.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortOrder=${sortOrder}`;
+
 
                 let res = await Apis.get(e);
                 console.log("API Response:", res.data);
@@ -29,7 +51,18 @@ const Home = () => {
             }
         }
         loadCourses();
-    }, [q]);
+    }, [q, sortBy, sortOrder]);
+
+    const handleSort = (field, order) => {
+        setSortBy(field);
+        setSortOrder(order);
+        setQ((prevParams) => {
+            const newParams = new URLSearchParams(prevParams.toString());
+            newParams.set('sortBy', field);
+            newParams.set('sortOrder', order);
+            return newParams;
+        });
+    };
 
     if (courses === null)
 
@@ -43,35 +76,37 @@ const Home = () => {
             <div className="row">
                 <div className="col-2 mt-5">
                     <div className="row text-center">
-                        <h4>Giá</h4>
+                        <h4>Price</h4>
                     </div>
 
                     <div className="row">
                         <div className="col text-center">
-                            <button type="button" className="btn btn-info">
-                            <i class=" bi bi-sort-up"> Tăng</i>
+                            <button type="button" className="btn btn-info"
+                                onClick={() => handleSort('price', 'asc')}>
+                                <i class=" bi bi-sort-up"> Sort up</i>
                             </button>
                         </div>
                         <div className="col text-center">
-                        <button type="button" className="btn btn-info">
-                            <i class=" bi bi-sort-down"> Giảm</i>
+                            <button type="button" className="btn btn-info"
+                                onClick={() => handleSort('price', 'desc')}>
+                                <i class=" bi bi-sort-down"> Sort down</i>
                             </button>
 
                         </div>
                     </div>
                     <div className="row text-center mt-5">
-                        <h4>Ngày</h4>
+                        <h4>Date</h4>
                     </div>
 
                     <div className="row">
                         <div className="col text-center">
                             <button type="button" className="btn btn-info">
-                            <i class=" bi bi-sort-up"> Tăng</i>
+                                <i class=" bi bi-sort-up"> Sort up</i>
                             </button>
                         </div>
                         <div className="col text-center">
-                        <button type="button" className="btn btn-info">
-                            <i class=" bi bi-sort-down"> Giảm</i>
+                            <button type="button" className="btn btn-info">
+                                <i class=" bi bi-sort-down"> Sort down</i>
                             </button>
 
                         </div>
