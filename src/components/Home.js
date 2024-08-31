@@ -119,7 +119,18 @@ const Home = () => {
                     <Row>
                         {courses.map(c => {
                             return <Col xs={15} md={3} className="mt-5">
-                                <Card key={c.id} style={{ width: '18rem', height: '35rem' }}>
+                                <Card key={c.id} style={{ width: '18rem', height: '35rem', position: 'relative' }}>
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        left: '10px',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                        borderRadius: '8px',
+                                        padding: '5px 10px',
+                                        zIndex: '1'
+                                    }}>
+                                        <span style={{ fontWeight: 'bold' }}>Professor: {c.teacherId.fullName}</span>
+                                    </div>
                                     <Card.Img variant="top" src={c.coverImg} alt="img" style={{ height: '20rem' }} />
                                     <Card.Body>
                                         <Card.Title className="two-line-height">{c.title}</Card.Title>
