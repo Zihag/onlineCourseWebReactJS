@@ -22,6 +22,10 @@ const Header = () => {
         nav(`/?kw=${kw}`)
     }
 
+    const handleCategorySelect = (id) => {
+        nav(`/?cateId=${id}`);
+    };
+
     if (categories === null)
         return <Spinner animation="grow" />;
     return (
@@ -31,18 +35,30 @@ const Header = () => {
             <div class="shadow">
                 <Navbar expand="lg" className="bg-body-tertiary">
                     <Container>
-                        <Navbar.Brand href="#home"><h2>Online Course</h2></Navbar.Brand>
+                        <Navbar.Brand onClick={() => nav(`/`)} style={{
+                            cursor: 'pointer'
+                        }}><h2>N&N Course&#174;</h2></Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
-                                <Nav.Link href="#home">Home</Nav.Link>
+                                <Nav.Link onClick={() => nav(`/`)} style={{
+                                    cursor: 'pointer'
+                                }}>Home</Nav.Link>
                                 <NavDropdown title="Category" id="basic-nav-dropdown">
-                                    {categories.map(c => <NavDropdown.Item href="#action/3.1" key={c.id}>{c.name}</NavDropdown.Item>)}
+                                    <NavDropdown.Item onClick={() => nav(`/`)} style={{
+                                        cursor: 'pointer'
+                                    }}>All</NavDropdown.Item>
+                                    {categories.map(c =>
+                                        <NavDropdown.Item
+                                            key={c.id}
+                                            onClick={() => handleCategorySelect(c.id)}
+                                            style={{ cursor: 'pointer' }}>{c.name}
+                                        </NavDropdown.Item>)}
                                 </NavDropdown>
                                 <Link className="nav-link text-danger" to={"/login"}>Login</Link>
 
                             </Nav>
-                            
+
                         </Navbar.Collapse>
                         <Form onSubmit={search} inline>
                             <Row>
@@ -50,7 +66,7 @@ const Header = () => {
                                     <Form.Control
                                         type="text"
                                         value={kw}
-                                        onChange={e=>setKw(e.target.value)}
+                                        onChange={e => setKw(e.target.value)}
                                         placeholder="Search"
                                         name="kw"
                                         className=" mr-sm-2"
