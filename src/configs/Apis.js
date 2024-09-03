@@ -14,6 +14,7 @@ export const endpoints = {
     "detail": (courseId) => `${SERVER_CONTEXT}/api/courses/${courseId}`,
     "current-user": `${SERVER_CONTEXT}/api/current-user/`,
     "enroll-multiple": `${SERVER_CONTEXT}/api/enrollments/enroll-multiple`,
+    "enrolled-courses": (userId) => `${SERVER_CONTEXT}/api/courses/enrolled-courses/${userId}`,
 };
 
 export const authApi = () => { 
