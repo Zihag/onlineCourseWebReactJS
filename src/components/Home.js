@@ -1,8 +1,9 @@
-import { useEffect, useState, React } from "react";
+import { useEffect, useState, React, useContext } from "react";
 import Apis, { endpoints } from "../configs/Apis";
 import { Button, Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import '../App.css'
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { CartContext } from "../contexts/CartContext";
 
 
 const Home = () => {
@@ -12,6 +13,7 @@ const Home = () => {
     const donvi = "vnD";
     const [sortBy, setSortBy] = useState('price'); // Default sorting field
     const [sortOrder, setSortOrder] = useState('asc'); // Default sorting order
+    const { addToCart } = useContext(CartContext);
 
     useEffect(() => {
         const loadCourses = async () => {
@@ -64,10 +66,7 @@ const Home = () => {
         });
     };
 
-    if (courses === null)
-
-        return < Spinner animation="grow" />;
-
+    if (courses === null) return < Spinner animation="grow" />;
 
     return (
         <>
@@ -142,7 +141,9 @@ const Home = () => {
                                             variant="info"
                                             className="m-3 px-4 shadow"
                                             onClick={() => nav(`/courses/${c.id}`)}>Detail</Button>
-                                        <Button variant="danger" className="m-3 shadow" >Purchase</Button>
+                                        <Button variant="danger" onClick={() => addToCart(c)}>
+                                            Add to Cart
+                                        </Button>
                                     </Card.Body>
                                 </Card>
                             </Col>
