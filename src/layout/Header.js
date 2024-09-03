@@ -70,6 +70,7 @@ const Header = () => {
                                     <>
                                         <Link className="nav-link text-info" to="/">Chào {user.username}!</Link>
                                         <Button onClick={logout} variant="secondary">Đăng xuất</Button>
+                                        <Button variant="warning" onClick={() => nav("/cart")}>Go to Cart</Button>
                                     </>}
                             </Nav>
 

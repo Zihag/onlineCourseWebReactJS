@@ -13,9 +13,10 @@ export const endpoints = {
     "login": `${SERVER_CONTEXT}/api/login/`,
     "detail": (courseId) => `${SERVER_CONTEXT}/api/courses/${courseId}`,
     "current-user": `${SERVER_CONTEXT}/api/current-user/`,
+    "enroll-multiple": `${SERVER_CONTEXT}/api/enrollments/enroll-multiple`,
 };
 
-export const authApi = () => {
+export const authApi = () => { 
     return axios.create({
         baseURL: SERVER,
         headers: {
