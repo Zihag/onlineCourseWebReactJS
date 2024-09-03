@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Container, Form, Nav, Navbar, NavDropdown, Row, Spinner } from "react-bootstrap";
 import Apis, { endpoints } from "../configs/Apis";
 import { Link, useNavigate } from "react-router-dom";
+import { MyUserContext } from "../App"
 
 const Header = () => {
     const [categories, setCategories] = useState(null);
     const [kw, setKw] = useState("");
     const nav = useNavigate();
+    const logout = () => {
+        dispatch({
+            type: "logout"
+        })
+    }
+
+    const [user, dispatch] = useContext(MyUserContext);
 
     const loadCates = async () => {
         let res = await Apis.get(endpoints['categories'])
@@ -55,8 +63,14 @@ const Header = () => {
                                             style={{ cursor: 'pointer' }}>{c.name}
                                         </NavDropdown.Item>)}
                                 </NavDropdown>
-                                <Link className="nav-link text-danger" to={"/login"}>Login</Link>
-
+                                {user === null ? <>
+                                    <Link className="nav-link text-danger" to="/login">Đăng nhập</Link>
+                                    <Link className="nav-link text-danger" to="/register">Đăng kí</Link>
+                                </> :
+                                    <>
+                                        <Link className="nav-link text-info" to="/">Chào {user.username}!</Link>
+                                        <Button onClick={logout} variant="secondary">Đăng xuất</Button>
+                                    </>}
                             </Nav>
 
                         </Navbar.Collapse>
