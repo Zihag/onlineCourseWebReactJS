@@ -15,6 +15,7 @@ const CourseDetail = () => {
     const [enrolled, setEnrolled] = useState({}); // Thêm trạng thái cho việc đăng ký
     const [progress, setProgress] = useState({});
     const { addToCart } = useContext(CartContext);
+    // const ratingNum = course.ratings.length
 
 
     // Theo dõi trạng thái đóng mở lecture
@@ -62,12 +63,13 @@ const CourseDetail = () => {
                         Apis.get(endpoints['enroll-check'](user.id, courseId)),
                         Apis.get(endpoints['enroll-progress'](user.id, courseId))
                     ]);
-    
+
                     setEnrolled(enrollmentData);
                     setProgress(progressData);
 
                     console.log('Enrollment Data:', enrollmentData);
                     console.log('Progress Data:', progressData);
+                    // console.log('rating num: ', ratingNum)
 
 
                 }
@@ -89,21 +91,33 @@ const CourseDetail = () => {
     useEffect(() => {
         // Logic cập nhật trạng thái khi enrolled hoặc progress thay đổi
     }, [enrolled, progress]);
-    
+
     if (!course)
         return <Spinner animation="grow" />;
 
     return (
-        <div className='container mt-5'>
+        <div className='container' style={{ marginTop: '100px' }}>
+            {enrolled.data ? (
+                        <div className='text-center'><b className='text-success'>Progress</b>
+                        <div class="progress">
+                        <div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar" style={{ width: `${progress.data}%` }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{progress.data}</div>
+                      </div>
+                      </div>
+                    ) : (
+                        <div></div>
+                    )}
             <div className='row'>
                 <div className='col col-lg-5 text-center' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <img src={course.coverImg} alt={course.title} style={{ width: '100%', borderRadius: '15px' }} />
                     <h2 className='mt-3' style={{ color: '#f5896b' }}>{course.price} {donvi}</h2>
+                    
                     {enrolled.data ? (
                         <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
+                            
                     ) : (
                         <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
+                    
                 </div>
                 <div className='col' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column' }}>
                     <h2><b>{course.title}</b></h2>
@@ -126,18 +140,25 @@ const CourseDetail = () => {
                                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
                             >
                                 <h6>{index + 1}. {lecture.title}</h6>
-
-                                <Collapse in={openLectures[lecture.id]}>
-                                    <div id={`collapse-${lecture.id}`}>
-                                        <p>{lecture.content}</p>
-                                        Xem bài giảng
-                                        <YouTubeVideo videoUrl={lecture.url} />
+                                {enrolled.data ? (
+                                    <div>
+                                        <Collapse in={openLectures[lecture.id]}>
+                                            <div id={`collapse-${lecture.id}`}>
+                                                <p>{lecture.content}</p>
+                                                Xem bài giảng
+                                                <YouTubeVideo videoUrl={lecture.url} />
+                                            </div>
+                                        </Collapse>
                                     </div>
-                                </Collapse>
+                                ) : (<div></div>)}
+
                             </li>
                         ))}
                     </ul>
-                    <h6>Document</h6>
+                    {enrolled.data ? (
+                        <h6>Document</h6>) : (
+                        <div></div>
+                    )}
                     <ul className='mt-3'>
                         {course.documents.map((document, index) => (
                             <li key={document.id} onClick={() => toggleDocument(document.id)}
@@ -157,13 +178,16 @@ const CourseDetail = () => {
                             >
                                 <h6>{index + 1}. {document.title}</h6>
 
-                                <Collapse in={openDocuments[document.id]}>
-                                    <div id={`collapse-${document.id}`}>
-                                        <a onClick={() => window.open(document.url, '_blank', 'noopener,noreferrer')}
-                                            style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>{document.url}</a>
+                                {enrolled.data ? (
+                                    <Collapse in={openDocuments[document.id]}>
+                                        <div id={`collapse-${document.id}`}>
+                                            <a onClick={() => window.open(document.url, '_blank', 'noopener,noreferrer')}
+                                                style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>{document.url}</a>
 
-                                    </div>
-                                </Collapse>
+                                        </div>
+                                    </Collapse>
+                                ) : (<div></div>)}
+
                             </li>
                         ))}
                     </ul>
@@ -184,14 +208,15 @@ const CourseDetail = () => {
                                 <h4 className='text-center'>Rating</h4>
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
-                                    <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40"/><textarea class="form-control ml-1 shadow-none textarea"></textarea></div>
-                                    <div class="mt-3 text-right">
-                                        <button class="btn btn-primary btn-sm shadow-none" type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
-                                </div>
-                                ):(
+                                        <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" /><textarea class="form-control ml-1 shadow-none textarea"></textarea></div>
+                                        <div class="mt-3 text-right">
+                                            <button class="btn btn-primary btn-sm shadow-none" type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
+                                    </div>
+                                ) : (
                                     <div></div>
                                 )}
-                                
+
+
                                 <ul>
                                     {course.ratings.map((rating, index) => (
 
@@ -237,6 +262,8 @@ const CourseDetail = () => {
                                         </div>
                                     ))}
                                 </ul>
+
+
 
                             </div>
 
