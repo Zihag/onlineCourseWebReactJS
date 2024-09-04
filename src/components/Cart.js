@@ -12,14 +12,14 @@ const Cart = () => {
     const [message, setMessage] = useState(null);
     const nav = useNavigate();
 
-    const handleCheckout = async () => {
+    const check = async () => {
         if (cart.length === 0) {
             alert("Giỏ hàng trống!");
             return;
         }
 
         const enrollmentRequest = {
-            userId: user.id, // Giả sử user có trường id
+            userId: user.id,
             courseIds: cart.map(course => course.id)
         };
 
@@ -30,11 +30,11 @@ const Cart = () => {
                 setMessage({ type: 'success', text: 'Thanh toán thành công!' });
                 clearCart();
             } else {
-                setMessage({ type: 'danger', text: 'Thanh toán thất bại!' });
+                setMessage({ type: 'danger', text: 'Bạn đã tham gia một hoặc các khoá học này rồi!' });
             }
         } catch (error) {
             console.error(error);
-            setMessage({ type: 'danger', text: 'Bạn đã tham gia một hoặc các khoá học này rồi!' });
+            setMessage({ type: 'danger', text: 'Lỗi thanh toán gì gì đó' });
         } finally {
             setLoading(false);
         }
@@ -83,7 +83,7 @@ const Cart = () => {
                         </tbody>
                     </Table>
                     <h4>Tổng cộng: {cart.reduce((total, course) => total + course.price, 0)} vnD</h4>
-                    <Button variant="success" onClick={handleCheckout} disabled={loading}>
+                    <Button variant="success" onClick={check} disabled={loading}>
                         {loading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : 'Thanh Toán'}
                     </Button>
                 </>

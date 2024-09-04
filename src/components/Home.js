@@ -4,6 +4,7 @@ import { Button, Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import '../App.css'
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
+import { MyUserContext } from "../App";
 
 
 const Home = () => {
@@ -14,37 +15,45 @@ const Home = () => {
     const [sortBy, setSortBy] = useState('price'); // Default sorting field
     const [sortOrder, setSortOrder] = useState('asc'); // Default sorting order
     const { addToCart } = useContext(CartContext);
+    const [user, dispatch] = useContext(MyUserContext);
 
     useEffect(() => {
         const loadCourses = async () => {
             try {
-                let e = endpoints['courses'];
+                let url = '';
 
-                //search
-                let kw = q.get("kw");
-                if (kw !== null)
-                    e = `${e.includes('?') ? '&' : '?'}kw=${kw}`;
+                if (user?.role === "ROLE_TEACHER") {
+                    // cho giáo viên
+                    url = endpoints.coursesByTeacherId(user.id); // Assume user.id is the teacherId
+                } else {
+                    //cho học sinh
+                    url = endpoints.courses;
 
-                //cateFilter
-                let cateId = q.get("cateId");
-                if (cateId !== null) {
-                    e += `${e.includes('?') ? '&' : '?'}cateId=${cateId}`;
+                    //search
+                    let kw = q.get("kw");
+                    if (kw !== null)
+                        url += `${url.includes('?') ? '&' : '?'}kw=${kw}`;
+
+                    //cateFilter
+                    let cateId = q.get("cateId");
+                    if (cateId !== null) {
+                        url += `${url.includes('?') ? '&' : '?'}cateId=${cateId}`;
+                    }
+
+                    //price between
+                    let fromPrice = q.get("fromPrice");
+                    if (fromPrice !== null)
+                        url += `${url.includes('?') ? '&' : '?'}fromPrice=${fromPrice}`;
+
+                    let toPrice = q.get("toPrice");
+                    if (toPrice !== null)
+                        url += `${url.includes('?') ? '&' : '?'}toPrice=${toPrice}`;
+
+                    //sort and order
+                    url += `${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortOrder=${sortOrder}`;
                 }
 
-                //price between
-                let fromPrice = q.get("fromPrice");
-                if (fromPrice !== null)
-                    e += `${e.includes('?') ? '&' : '?'}fromPrice=${fromPrice}`;
-
-                let toPrice = q.get("toPrice");
-                if (toPrice !== null)
-                    e += `${e.includes('?') ? '&' : '?'}toPrice=${toPrice}`;
-
-                //sort and order
-                e += `${e.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortOrder=${sortOrder}`;
-
-
-                let res = await Apis.get(e);
+                let res = await Apis.get(url);
                 console.log("API Response:", res.data);
                 setCourses(res.data);
 
@@ -53,7 +62,7 @@ const Home = () => {
             }
         }
         loadCourses();
-    }, [q, sortBy, sortOrder]);
+    }, [q, sortBy, sortOrder, user]);
 
     const handleSort = (field, order) => {
         setSortBy(field);
@@ -66,54 +75,61 @@ const Home = () => {
         });
     };
 
-    if (courses === null) return < Spinner animation="grow" />;
+    const viewExercises = (courseId) => {
+        nav(`/exercises-of-teacher/${courseId}`);
+    };
+
+    if (courses === null) return <Spinner animation="grow" />;
 
     return (
         <>
-            <h1 className="text-center pt-5">Course List</h1>
+            {user === null || (user !== null && user.role === "ROLE_STUDENT") ? (
+                <h1 className="text-center pt-5">Course List</h1>
+            ) : (
+                user !== null && user.role === "ROLE_TEACHER" && (
+                    <h1 className="text-center pt-5">Hello Teacher! List Courses is teached by You</h1>
+                )
+            )}
             <div className="row"></div>
             <div className="row">
-                <div className="col-2 mt-5">
-                    <div className="row text-center">
-                        <h4>Price</h4>
-                    </div>
-
-                    <div className="row">
-                        <div className="col text-center">
-                            <button type="button" className="btn btn-info"
-                                onClick={() => handleSort('price', 'asc')}>
-                                <i class=" bi bi-sort-up"> Sort up</i>
-                            </button>
+                {user !== null && user.role === "ROLE_STUDENT" ? (
+                    <div className="col-2 mt-5">
+                        <div className="row text-center">
+                            <h4>Price</h4>
                         </div>
-                        <div className="col text-center">
-                            <button type="button" className="btn btn-info"
-                                onClick={() => handleSort('price', 'desc')}>
-                                <i class=" bi bi-sort-down"> Sort down</i>
-                            </button>
+                        <div className="row">
+                            <div className="col text-center">
+                                <button type="button" className="btn btn-info"
+                                    onClick={() => handleSort('price', 'asc')}>
+                                    <i class=" bi bi-sort-up"> Sort up</i>
+                                </button>
+                            </div>
+                            <div className="col text-center">
+                                <button type="button" className="btn btn-info"
+                                    onClick={() => handleSort('price', 'desc')}>
+                                    <i class=" bi bi-sort-down"> Sort down</i>
+                                </button>
 
+                            </div>
+                        </div>
+                        <div className="row text-center mt-5">
+                            <h4>Date</h4>
+                        </div>
+                        <div className="row">
+                            <div className="col text-center">
+                                <button type="button" className="btn btn-info">
+                                    <i class=" bi bi-sort-up"> Sort up</i>
+                                </button>
+                            </div>
+                            <div className="col text-center">
+                                <button type="button" className="btn btn-info">
+                                    <i class=" bi bi-sort-down"> Sort down</i>
+                                </button>
+
+                            </div>
                         </div>
                     </div>
-                    <div className="row text-center mt-5">
-                        <h4>Date</h4>
-                    </div>
-
-                    <div className="row">
-                        <div className="col text-center">
-                            <button type="button" className="btn btn-info">
-                                <i class=" bi bi-sort-up"> Sort up</i>
-                            </button>
-                        </div>
-                        <div className="col text-center">
-                            <button type="button" className="btn btn-info">
-                                <i class=" bi bi-sort-down"> Sort down</i>
-                            </button>
-
-                        </div>
-                    </div>
-
-
-
-                </div>
+                ) : null}
                 <div className=" col-9 container">
                     <Row>
                         {courses.map(c => {
@@ -130,22 +146,23 @@ const Home = () => {
                                             variant="info"
                                             className="m-3 px-4 shadow"
                                             onClick={() => nav(`/courses/${c.id}`)}>Detail</Button>
-                                        <Button variant="danger" onClick={() => addToCart(c)}>
-                                            Add to Cart
-                                        </Button>
+                                        {(user !== null && user.role === "ROLE_TEACHER") ? (
+                                            <Button variant="info" className="shadow" onClick={() => viewExercises(c.id)}>
+                                                Xem bài tập
+                                            </Button>
+                                        ) : <></>}
+                                        {user !== null && user.role === "ROLE_USER" ? <>
+                                            <Button variant="danger" onClick={() => addToCart(c)}>
+                                                Add to Cart
+                                            </Button>
+                                        </> : <></>}
                                     </Card.Body>
                                 </Card>
                             </Col>
                         })}
                     </Row>
                 </div>
-
             </div>
-
-
-
-
-
         </>
     )
 }
