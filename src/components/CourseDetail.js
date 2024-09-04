@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Apis, { endpoints } from '../configs/Apis';
 import { Button, Card, Collapse, Container, Spinner } from 'react-bootstrap';
 import { MyUserContext } from '../App';
+import { CartContext } from '../contexts/CartContext';
 
 const CourseDetail = () => {
     const { courseId } = useParams();
@@ -12,6 +13,9 @@ const CourseDetail = () => {
     const [openDocuments, setOpenDocuments] = useState({});
     const [user, dispatch] = useContext(MyUserContext);
     const [enrolled, setEnrolled] = useState({}); // Thêm trạng thái cho việc đăng ký
+    const [progress, setProgress] = useState({});
+    const { addToCart } = useContext(CartContext);
+
 
     // Theo dõi trạng thái đóng mở lecture
     const toggleLecture = (id) => {
@@ -54,10 +58,17 @@ const CourseDetail = () => {
 
                 if (user?.id) {
                     // Kiểm tra trạng thái đăng ký
-                    let enrollmentData = await Apis.get(endpoints['enroll-check'](user.id, courseId));
+                    const [enrollmentData, progressData] = await Promise.all([
+                        Apis.get(endpoints['enroll-check'](user.id, courseId)),
+                        Apis.get(endpoints['enroll-progress'](user.id, courseId))
+                    ]);
+    
                     setEnrolled(enrollmentData);
+                    setProgress(progressData);
 
                     console.log('Enrollment Data:', enrollmentData);
+                    console.log('Progress Data:', progressData);
+
 
                 }
             } catch (ex) {
@@ -71,6 +82,14 @@ const CourseDetail = () => {
         console.log('Enrolled State (after update):', enrolled);
     }, [enrolled]);
 
+    useEffect(() => {
+        console.log('Progress State (after update):', progress);
+    }, [progress]);
+
+    useEffect(() => {
+        // Logic cập nhật trạng thái khi enrolled hoặc progress thay đổi
+    }, [enrolled, progress]);
+    
     if (!course)
         return <Spinner animation="grow" />;
 
@@ -80,10 +99,10 @@ const CourseDetail = () => {
                 <div className='col col-lg-5 text-center' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <img src={course.coverImg} alt={course.title} style={{ width: '100%', borderRadius: '15px' }} />
                     <h2 className='mt-3' style={{ color: '#f5896b' }}>{course.price} {donvi}</h2>
-                    {enrolled ? (
-                        <Button variant="success" className="m-3 shadow">Paid</Button>
+                    {enrolled.data ? (
+                        <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
                     ) : (
-                        <Button variant="info" className="m-3 shadow">Purchase</Button>
+                        <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
                 </div>
                 <div className='col' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column' }}>
@@ -163,10 +182,16 @@ const CourseDetail = () => {
 
                                 </div>
                                 <h4 className='text-center'>Rating</h4>
-                                <div class="bg-light p-2">
+                                {progress.data === 100 ? (
+                                    <div class="bg-light p-2">
                                     <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40"/><textarea class="form-control ml-1 shadow-none textarea"></textarea></div>
-                                    <div class="mt-3 text-right"><button class="btn btn-primary btn-sm shadow-none" type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
+                                    <div class="mt-3 text-right">
+                                        <button class="btn btn-primary btn-sm shadow-none" type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
                                 </div>
+                                ):(
+                                    <div></div>
+                                )}
+                                
                                 <ul>
                                     {course.ratings.map((rating, index) => (
 

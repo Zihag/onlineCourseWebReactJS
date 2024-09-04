@@ -47,7 +47,7 @@ const Home = () => {
                 // Check enrollment status
                 if (user?.id) {
                     const enrollmentRequests = res.data.map(course =>
-                        Apis.get(endpoints['enroll-check'](course.id, user.id)));
+                        Apis.get(endpoints['enroll-check'](user.id, course.id)));
                     const enrollmentResponses = await Promise.all(enrollmentRequests);
                     const enrollmentStatus = {};
                     enrollmentResponses.forEach((response, index) => {
