@@ -41,7 +41,7 @@ const Header = () => {
         <>
 
             <div class="shadow">
-                <Navbar expand="lg" className="bg-body-tertiary">
+                <Navbar expand="lg" className="bg-body-tertiary fixed-top">
                     <Container>
                         <Navbar.Brand onClick={() => nav(`/`)} style={{
                             cursor: 'pointer'
