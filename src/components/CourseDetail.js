@@ -83,15 +83,18 @@ const CourseDetail = () => {
 
 
     const addRating = () => {
-        const process = async() => {
-            let {data} =await authApi().post(endpoints['add-rating'],{
-                "courseId":courseId,
-                "userId":user.id,
+        const process = async () => {
+            let { data } = await authApi().post(endpoints['add-rating'], {
+                "courseId": courseId,
+                "userId": user.id,
                 "feedback": content,
                 "score": score
             });
 
-            setCourse([...course, data]);
+            setCourse({
+                ...course,
+                ratings: [...course.ratings, data]
+            });
         }
         process();
     }
@@ -216,12 +219,28 @@ const CourseDetail = () => {
                                 <h4 className='text-center'>Rating</h4>
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
-                                        <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
-                                        <textarea value={content} onChange={e=>setContent(e.target.value)} class="form-control ml-1 shadow-none textarea"></textarea>
-                                        <textarea value={score} onChange={e=>setScore(e.target.value)}></textarea>
+                                        <div class=" d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
+                                            
+
+                                                <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
+
+
+                                                
+                                            
+
+
                                         </div>
-                                        <div class="mt-3 text-right">
-                                            <button class="btn btn-primary btn-sm shadow-none" type="button" onClick={addRating}>Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
+                                        <div className=' mt-3 text-center'><select value={score} onChange={e => setScore(e.target.value)}>
+                                                    <option value="1">☆</option>
+                                                    <option value="2">☆☆</option>
+                                                    <option value="3">☆☆☆</option>
+                                                    <option value="4">☆☆☆☆</option>
+                                                    <option value="5">☆☆☆☆☆</option>
+                                                </select></div>
+                                        <div class="mt-3 text-right text-center">
+                                            
+                                            <button class="btn btn-primary btn-sm shadow-none" type="button" onClick={addRating}>Post rating</button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div></div>
@@ -251,6 +270,7 @@ const CourseDetail = () => {
                                                 </div>
 
                                                 <div class="icons align-items-center">
+                                                    {rating.score}
                                                     <i class="fa fa-star text-warning"></i>
                                                     <i class="fa fa-check-circle-o check-icon"></i>
                                                 </div>

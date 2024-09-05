@@ -22,7 +22,7 @@ export const endpoints = {
     "score-feedback": (submissionId) => `${SERVER_CONTEXT}/api/submissions/${submissionId}`,
     "enroll-check": (userId, courseId) => `${SERVER_CONTEXT}/api/enrollments/enroll-check?userId=${userId}&courseId=${courseId}`,
     "enroll-progress": (userId,courseId ) => `${SERVER_CONTEXT}/api/enrollments/enroll-progress?userId=${userId}&courseId=${courseId}`,
-    "add-rating": `${SERVER_CONTEXT}/api/ratings/`
+    "add-rating": `${SERVER_CONTEXT}/api/ratings/add`
 };
 
 export const authApi = () => {
