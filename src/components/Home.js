@@ -95,7 +95,6 @@ const Home = () => {
                     <h1 className="text-center pt-5">Hello Teacher! Courses Taught by You</h1>
                 )
             )}
-            <div className="row"></div>
             <div className="row">
                 {user !== null && user.role === "ROLE_STUDENT" && (
                     <div className="col-2 mt-5">
