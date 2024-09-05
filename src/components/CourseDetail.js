@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Apis, { endpoints } from '../configs/Apis';
+import Apis, { authApi, endpoints } from '../configs/Apis';
 import { Button, Card, Collapse, Container, Spinner } from 'react-bootstrap';
 import { MyUserContext } from '../App';
 import { CartContext } from '../contexts/CartContext';
+import Moment from 'react-moment';
 
 const CourseDetail = () => {
     const { courseId } = useParams();
@@ -15,6 +16,8 @@ const CourseDetail = () => {
     const [enrolled, setEnrolled] = useState({}); // Thêm trạng thái cho việc đăng ký
     const [progress, setProgress] = useState({});
     const { addToCart } = useContext(CartContext);
+    const [content, setContent] = useState();
+    const [score, setScore] = useState();
     // const ratingNum = course.ratings.length
 
 
@@ -80,6 +83,20 @@ const CourseDetail = () => {
         loadCourse();
     }, [courseId, user]);
 
+
+    const addRating = () => {
+        const process = async() => {
+            let {data} =await authApi().post(endpoints['add-rating'],{
+                "courseId":courseId,
+                "userId":user.id,
+                "feedback": content,
+                "score": score
+            });
+
+            setCourse([...course, data]);
+        }
+        process();
+    }
     useEffect(() => {
         console.log('Enrolled State (after update):', enrolled);
     }, [enrolled]);
@@ -208,9 +225,12 @@ const CourseDetail = () => {
                                 <h4 className='text-center'>Rating</h4>
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
-                                        <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" /><textarea class="form-control ml-1 shadow-none textarea"></textarea></div>
+                                        <div class="d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
+                                        <textarea value={content} onChange={e=>setContent(e.target.value)} class="form-control ml-1 shadow-none textarea"></textarea>
+                                        <textarea value={score} onChange={e=>setScore(e.target.value)}></textarea>
+                                        </div>
                                         <div class="mt-3 text-right">
-                                            <button class="btn btn-primary btn-sm shadow-none" type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
+                                            <button class="btn btn-primary btn-sm shadow-none" type="button" onClick={addRating}>Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
                                     </div>
                                 ) : (
                                     <div></div>
@@ -232,7 +252,7 @@ const CourseDetail = () => {
                                                 </div>
 
 
-                                                <small>{rating.createdDate}</small>
+                                                <small><Moment locale='vi' fromNow>{rating.createdDate}</Moment></small>
 
                                             </div>
 

@@ -16,8 +16,8 @@ export const endpoints = {
     "enroll-multiple": `${SERVER_CONTEXT}/api/enrollments/enroll-multiple`,
     "enrolled-courses": (userId) => `${SERVER_CONTEXT}/api/courses/enrolled-courses/${userId}`,
     "enroll-check": (userId, courseId) => `${SERVER_CONTEXT}/api/enrollments/enroll-check?userId=${userId}&courseId=${courseId}`,
-    "enroll-progress": (userId,courseId ) => `${SERVER_CONTEXT}/api/enrollments/enroll-progress?userId=${userId}&courseId=${courseId}`
-
+    "enroll-progress": (userId,courseId ) => `${SERVER_CONTEXT}/api/enrollments/enroll-progress?userId=${userId}&courseId=${courseId}`,
+    "add-rating": `${SERVER_CONTEXT}/api/ratings/`
 };
 
 export const authApi = () => { 
