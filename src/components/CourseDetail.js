@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Apis, { authApi, endpoints } from '../configs/Apis';
 import { Button, Card, Collapse, Container, Spinner } from 'react-bootstrap';
 import { MyUserContext } from '../App';
@@ -18,6 +18,8 @@ const CourseDetail = () => {
     const { addToCart } = useContext(CartContext);
     const [content, setContent] = useState();
     const [score, setScore] = useState();
+    const nav = useNavigate();
+
     // const ratingNum = course.ratings.length
 
 
@@ -64,7 +66,7 @@ const CourseDetail = () => {
                     // Kiểm tra trạng thái đăng ký
                     const [enrollmentData, progressData] = await Promise.all([
                         Apis.get(endpoints['enroll-check'](user.id, courseId)),
-                        Apis.get(endpoints['enroll-progress'](user.id, courseId))
+                        Apis.get(endpoints['enroll-progress'](user.id, courseId)),
                     ]);
 
                     setEnrolled(enrollmentData);
@@ -72,7 +74,7 @@ const CourseDetail = () => {
 
                     console.log('Enrollment Data:', enrollmentData);
                     console.log('Progress Data:', progressData);
-                    // console.log('rating num: ', ratingNum)
+
                 }
             } catch (ex) {
                 console.error(ex);
@@ -82,6 +84,7 @@ const CourseDetail = () => {
     }, [courseId, user]);
 
 
+    
     const addRating = () => {
         const process = async () => {
             let { data } = await authApi().post(endpoints['add-rating'], {
@@ -105,7 +108,11 @@ const CourseDetail = () => {
     useEffect(() => {
         console.log('Progress State (after update):', progress);
     }, [progress]);
-
+    
+    useEffect(() => {
+        console.log('User info:', user);
+    }, [user]);
+    
     useEffect(() => {
         // Logic cập nhật trạng thái khi enrolled hoặc progress thay đổi
     }, [enrolled, progress]);
@@ -135,7 +142,11 @@ const CourseDetail = () => {
                     ) : (
                         <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
-
+                    {progress.data === 100 ? (
+                        <Button variant="success" className="m-3 shadow" onClick={() => nav(`/certificate/${courseId}`)} >Get certificate</Button>
+                    ):(
+                        <div></div>
+                    )}
                 </div>
                 <div className='col' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column' }}>
                     <h2><b>{course.title}</b></h2>
@@ -209,6 +220,8 @@ const CourseDetail = () => {
                             </li>
                         ))}
                     </ul>
+                    
+
                 </div>
                 <div className='row'>
                     <div class="container mt-5">
@@ -220,25 +233,25 @@ const CourseDetail = () => {
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
                                         <div class=" d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
-                                            
-
-                                                <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
 
 
-                                                
-                                            
+                                            <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
+
+
+
+
 
 
                                         </div>
                                         <div className=' mt-3 text-center'><select value={score} onChange={e => setScore(e.target.value)}>
-                                                    <option value="1">☆</option>
-                                                    <option value="2">☆☆</option>
-                                                    <option value="3">☆☆☆</option>
-                                                    <option value="4">☆☆☆☆</option>
-                                                    <option value="5">☆☆☆☆☆</option>
-                                                </select></div>
+                                            <option value="1">☆</option>
+                                            <option value="2">☆☆</option>
+                                            <option value="3">☆☆☆</option>
+                                            <option value="4">☆☆☆☆</option>
+                                            <option value="5">☆☆☆☆☆</option>
+                                        </select></div>
                                         <div class="mt-3 text-right text-center">
-                                            
+
                                             <button class="btn btn-primary btn-sm shadow-none" type="button" onClick={addRating}>Post rating</button>
                                         </div>
                                     </div>
