@@ -73,8 +73,6 @@ const CourseDetail = () => {
                     console.log('Enrollment Data:', enrollmentData);
                     console.log('Progress Data:', progressData);
                     // console.log('rating num: ', ratingNum)
-
-
                 }
             } catch (ex) {
                 console.error(ex);
@@ -115,26 +113,26 @@ const CourseDetail = () => {
     return (
         <div className='container' style={{ marginTop: '100px' }}>
             {enrolled.data ? (
-                        <div className='text-center'><b className='text-success'>Progress</b>
-                        <div class="progress">
+                <div className='text-center'><b className='text-success'>Progress</b>
+                    <div class="progress">
                         <div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar" style={{ width: `${progress.data}%` }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{progress.data}</div>
-                      </div>
-                      </div>
-                    ) : (
-                        <div></div>
-                    )}
+                    </div>
+                </div>
+            ) : (
+                <div></div>
+            )}
             <div className='row'>
                 <div className='col col-lg-5 text-center' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <img src={course.coverImg} alt={course.title} style={{ width: '100%', borderRadius: '15px' }} />
                     <h2 className='mt-3' style={{ color: '#f5896b' }}>{course.price} {donvi}</h2>
-                    
+
                     {enrolled.data ? (
                         <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
-                            
+
                     ) : (
                         <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
-                    
+
                 </div>
                 <div className='col' style={{ flexBasis: '40%', padding: '20px', display: 'flex', flexDirection: 'column' }}>
                     <h2><b>{course.title}</b></h2>
@@ -210,17 +208,10 @@ const CourseDetail = () => {
                     </ul>
                 </div>
                 <div className='row'>
-
                     <div class="container mt-5">
-
                         <div class="row  d-flex justify-content-center">
-
                             <div class="col-md-8">
-
                                 <div class="headings d-flex justify-content-between align-items-center mb-3">
-
-
-
                                 </div>
                                 <h4 className='text-center'>Rating</h4>
                                 {progress.data === 100 ? (
@@ -235,28 +226,19 @@ const CourseDetail = () => {
                                 ) : (
                                     <div></div>
                                 )}
-
-
                                 <ul>
                                     {course.ratings.map((rating, index) => (
-
                                         <div class="card p-3 mt-3">
-
                                             <div class="d-flex justify-content-between align-items-center">
-
                                                 <div class="user d-flex flex-row align-items-center">
-
                                                     <img src="https://i.imgur.com/hczKIze.jpg" width="30" class="user-img rounded-circle mr-2" />
                                                     <span><small class="font-weight-bold text-primary">{rating.userId.fullName}</small> <small class="font-weight-bold">{rating.feedback}</small></span>
-
                                                 </div>
 
 
                                                 <small><Moment locale='vi' fromNow>{rating.createdDate}</Moment></small>
 
                                             </div>
-
-
                                             <div class="action d-flex justify-content-between mt-2 align-items-center">
 
                                                 <div class="reply px-4">
@@ -269,26 +251,15 @@ const CourseDetail = () => {
                                                 </div>
 
                                                 <div class="icons align-items-center">
-
                                                     <i class="fa fa-star text-warning"></i>
                                                     <i class="fa fa-check-circle-o check-icon"></i>
-
                                                 </div>
-
                                             </div>
-
-
-
                                         </div>
                                     ))}
                                 </ul>
-
-
-
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </div>

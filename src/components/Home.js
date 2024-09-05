@@ -1,53 +1,58 @@
-import { useEffect, useState, React, useContext } from "react";
-import Apis, { endpoints } from "../configs/Apis";
-import { Button, Card, Col, Container, Row, Spinner } from "react-bootstrap";
+import { useEffect, useState, useContext } from "react";
+import Apis, { authApi, endpoints } from "../configs/Apis";
+import { Button, Card, Col, Row, Spinner } from "react-bootstrap";
 import '../App.css';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
 import { MyUserContext } from "../App";
 
 const Home = () => {
-    const [courses, setCourses] = useState([]);
-    const [enrollments, setEnrollments] = useState({});
+    const [courses, setCourses] = useState(null);
     const [q, setQ] = useSearchParams();
     const nav = useNavigate();
     const donvi = "vnD";
     const [sortBy, setSortBy] = useState('price'); // Default sorting field
     const [sortOrder, setSortOrder] = useState('asc'); // Default sorting order
     const { addToCart } = useContext(CartContext);
-    const [user, dispatch] = useContext(MyUserContext);
+    const [user] = useContext(MyUserContext); // No need for dispatch if not used
+    const [enrollments, setEnrollments] = useState({});
 
     useEffect(() => {
         const loadCourses = async () => {
             try {
-                let e = endpoints['courses'];
+                let url = '';
 
-                // Search, filter, and sort
-                let kw = q.get("kw");
-                if (kw !== null)
-                    e += `${e.includes('?') ? '&' : '?'}kw=${kw}`;
+                if (user?.role === "ROLE_TEACHER") {
+                    // URL cho giáo viên
+                    url = endpoints.coursesByTeacherId(user.id);
+                } else {
+                    // URL cho học sinh
+                    url = endpoints.courses;
 
-                let cateId = q.get("cateId");
-                if (cateId !== null)
-                    e += `${e.includes('?') ? '&' : '?'}cateId=${cateId}`;
+                    // Các điều kiện tìm kiếm cho học sinh
+                    let kw = q.get("kw");
+                    if (kw !== null) url += `${url.includes('?') ? '&' : '?'}kw=${kw}`;
 
-                let fromPrice = q.get("fromPrice");
-                if (fromPrice !== null)
-                    e += `${e.includes('?') ? '&' : '?'}fromPrice=${fromPrice}`;
+                    let cateId = q.get("cateId");
+                    if (cateId !== null) url += `${url.includes('?') ? '&' : '?'}cateId=${cateId}`;
 
-                let toPrice = q.get("toPrice");
-                if (toPrice !== null)
-                    e += `${e.includes('?') ? '&' : '?'}toPrice=${toPrice}`;
+                    let fromPrice = q.get("fromPrice");
+                    if (fromPrice !== null) url += `${url.includes('?') ? '&' : '?'}fromPrice=${fromPrice}`;
 
-                e += `${e.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortOrder=${sortOrder}`;
+                    let toPrice = q.get("toPrice");
+                    if (toPrice !== null) url += `${url.includes('?') ? '&' : '?'}toPrice=${toPrice}`;
 
-                let res = await Apis.get(e);
+                    url += `${url.includes('?') ? '&' : '?'}sortBy=${sortBy}&sortOrder=${sortOrder}`;
+                }
+
+                let res = await Apis.get(url);
+                console.log("API Response:", res.data);
                 setCourses(res.data);
 
-                // Check enrollment status
-                if (user?.id) {
+                if (user?.role === "ROLE_STUDENT" && user?.id) {
                     const enrollmentRequests = res.data.map(course =>
-                        Apis.get(endpoints['enroll-check'](user.id, course.id)));
+                        Apis.get(endpoints['enroll-check'](user.id, course.id))
+                    );
                     const enrollmentResponses = await Promise.all(enrollmentRequests);
                     const enrollmentStatus = {};
                     enrollmentResponses.forEach((response, index) => {
@@ -55,17 +60,19 @@ const Home = () => {
                     });
                     setEnrollments(enrollmentStatus);
                 }
+
             } catch (ex) {
                 console.error(ex);
             }
-        }
+        };
+
         loadCourses();
     }, [q, sortBy, sortOrder, user]);
 
     const handleSort = (field, order) => {
         setSortBy(field);
         setSortOrder(order);
-        setQ(prevParams => {
+        setQ((prevParams) => {
             const newParams = new URLSearchParams(prevParams.toString());
             newParams.set('sortBy', field);
             newParams.set('sortOrder', order);
@@ -73,14 +80,24 @@ const Home = () => {
         });
     };
 
-    if (courses.length === 0) return <Spinner animation="grow" />;
+    const viewExercises = (courseId) => {
+        nav(`/exercises-of-teacher/${courseId}`);
+    };
+
+    if (courses === null) return <Spinner animation="grow" />;
 
     return (
         <>
-            <div className="mt-5">
+            {user === null || (user !== null && user.role === "ROLE_STUDENT") ? (
                 <h1 className="text-center pt-5">Course List</h1>
-                <div className="row"></div>
-                <div className="row">
+            ) : (
+                user !== null && user.role === "ROLE_TEACHER" && (
+                    <h1 className="text-center pt-5">Hello Teacher! Courses Taught by You</h1>
+                )
+            )}
+            <div className="row"></div>
+            <div className="row">
+                {user !== null && user.role === "ROLE_STUDENT" && (
                     <div className="col-2 mt-5">
                         <div className="row text-center">
                             <h4>Price</h4>
@@ -115,56 +132,53 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-9 container">
-                        <Row>
-                            {courses.map(course => (
-                                <Col xs={15} md={3} className="mt-5" key={course.id}>
-                                    <Card style={{ width: '18rem', height: '35rem', position: 'relative' }}>
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '10px',
-                                            left: '10px',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                            borderRadius: '8px',
-                                            padding: '5px 10px',
-                                            zIndex: '1'
-                                        }}>
-                                            <span style={{ fontWeight: 'bold' }}>Professor: {course.teacher.fullName}</span>
-                                        </div>
-                                        <Card.Img variant="top" src={course.coverImg} alt="img" style={{ height: '20rem' }} />
-                                        <Card.Body>
-                                            <Card.Title className="two-line-height">{course.title}</Card.Title>
+                )}
+                <div className="col-9 container">
+                    <Row>
+                        {courses.map(c => (
+                            <Col xs={15} md={3} className="mt-5" key={c.id}>
+                                <Card style={{ width: '18rem', height: '35rem' }}>
+                                    <Card.Img variant="top" src={c.coverImg} alt="img" style={{ height: '20rem' }} />
+                                    <Card.Body>
+                                        <Card.Title className="two-line-height">{c.title}</Card.Title>
+                                        {user !== null && user.role === "ROLE_STUDENT" ? <>
                                             <Card.Subtitle className="mb-2 text-muted">
-                                                <span className="custom-subtitle shadow rounded">{course.price} {donvi}</span>
+                                                <span className="custom-subtitle shadow rounded">{c.price} {donvi}</span>
                                             </Card.Subtitle>
-                                            <Card.Text className="two-line-ellipsis">
-                                                {course.description}
-                                            </Card.Text>
-                                            {enrollments[course.id] ? (
+                                        </> : <></>
+                                        }
+                                        <Card.Text className="two-line-ellipsis">
+                                            {c.description}
+                                        </Card.Text>
+                                        {user !== null && user.role === "ROLE_TEACHER" && (
+                                            <Button variant="info" className="shadow" onClick={() => viewExercises(c.id)}>
+                                                View Exercises
+                                            </Button>
+                                        )}
+                                        {user !== null && user.role === "ROLE_STUDENT" && (
+                                            enrollments[c.id] ? (
                                                 <div>
                                                     <Button variant="success"
                                                         className="m-3 px-4 shadow"
-                                                        onClick={() => nav(`/courses/${course.id}`)}>Join</Button>
+                                                        onClick={() => nav(`/courses/${c.id}`)}>Join</Button>
                                                 </div>
-
                                             ) : (
                                                 <div>
                                                     <Button
                                                         variant="info"
                                                         className="m-3 px-4 shadow"
-                                                        onClick={() => nav(`/courses/${course.id}`)}>Detail</Button>
-                                                    <Button variant="danger" onClick={() => addToCart(course)}>
+                                                        onClick={() => nav(`/courses/${c.id}`)}>Detail</Button>
+                                                    <Button variant="danger" onClick={() => addToCart(c)}>
                                                         Add to Cart
                                                     </Button>
                                                 </div>
-
-                                            )}
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-                            ))}
-                        </Row>
-                    </div>
+                                            )
+                                        )}
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
                 </div>
             </div>
         </>

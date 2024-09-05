@@ -10,17 +10,22 @@ const SERVER = "http://localhost:8080";
 export const endpoints = {
     "categories": `${SERVER_CONTEXT}/api/categories`,
     "courses": `${SERVER_CONTEXT}/api/courses/`,
+    "coursesByTeacherId": (teacherId) => `${SERVER_CONTEXT}/api/courses/get-course-by-teacher/${teacherId}`,
     "login": `${SERVER_CONTEXT}/api/login/`,
     "detail": (courseId) => `${SERVER_CONTEXT}/api/courses/${courseId}`,
     "current-user": `${SERVER_CONTEXT}/api/current-user/`,
     "enroll-multiple": `${SERVER_CONTEXT}/api/enrollments/enroll-multiple`,
     "enrolled-courses": (userId) => `${SERVER_CONTEXT}/api/courses/enrolled-courses/${userId}`,
+    "register": `${SERVER_CONTEXT}/api/users/register`,
+    "get-exercises-by-courseId": (courseId) => `${SERVER_CONTEXT}/api/exercises/${courseId}`,
+    "add-exercise": `${SERVER_CONTEXT}/api/exercises/add-exercise`,
+    "score-feedback": (submissionId) => `${SERVER_CONTEXT}/api/submissions/${submissionId}`,
     "enroll-check": (userId, courseId) => `${SERVER_CONTEXT}/api/enrollments/enroll-check?userId=${userId}&courseId=${courseId}`,
     "enroll-progress": (userId,courseId ) => `${SERVER_CONTEXT}/api/enrollments/enroll-progress?userId=${userId}&courseId=${courseId}`,
     "add-rating": `${SERVER_CONTEXT}/api/ratings/`
 };
 
-export const authApi = () => { 
+export const authApi = () => {
     return axios.create({
         baseURL: SERVER,
         headers: {

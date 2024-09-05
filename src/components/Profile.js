@@ -1,7 +1,7 @@
 import { Card, Col, Container, ListGroup, Row } from "react-bootstrap";
 import { MyUserContext } from "../App";
 import { useContext, useEffect, useState } from "react";
-import Apis, { endpoints } from "../configs/Apis";
+import Apis, { authApi, endpoints } from "../configs/Apis";
 
 const Profile = () => {
     const [user] = useContext(MyUserContext);
@@ -11,7 +11,7 @@ const Profile = () => {
         const loadCoursesByUser = async () => {
             try {
                 let url = endpoints['enrolled-courses'](user.id);
-                let response = await Apis.get(url);
+                let response = await authApi().get(url);
                 setCourses(response.data);
             } catch (ex) {
                 console.error("Failed to fetch courses:", ex);
@@ -36,6 +36,14 @@ const Profile = () => {
                                 <strong>Phone: {user.phone}</strong>
                                 <br />
                                 <strong>Email: {user.email}</strong>
+                                <br />
+                                {user.role === "ROLE_ADMIN" ? <>
+                                    <p class="text-success">Bạn là quản trị viên</p>
+                                </> : user.role === "ROLE_STUDENT" ? <>
+                                    <p class="text-success">Bạn là học sinh</p>
+                                </> : <>
+                                    <p class="text-success">Bạn là giáo viên</p>
+                                </>}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -48,7 +56,7 @@ const Profile = () => {
                                 {courses && courses.length > 0 ? (
                                     courses.map((c) => (
                                         <ListGroup.Item key={c.id}>
-                                            <img src={c.coverImg} 
+                                            <img src={c.coverImg}
                                                 style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }}
                                             />
                                             {c.title}

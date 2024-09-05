@@ -11,6 +11,8 @@ import cookie from "react-cookies"
 import Cart from "./components/Cart";
 import { CartProvider } from './contexts/CartContext';
 import Profile from "./components/Profile";
+import Register from './components/Register'
+import Exercises from "./components/Exercise";
 
 export const MyUserContext = createContext();
 // export const CartContext = createContext();
@@ -30,6 +32,8 @@ const App = () => {
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/profile" element={<Profile/>}/>
+            <Route path="/register" element={<Register/>}/>
+            <Route path="/exercises-of-teacher/:courseId" element={<Exercises />} />
           </Routes>
           <Footer />
         </BrowserRouter>
