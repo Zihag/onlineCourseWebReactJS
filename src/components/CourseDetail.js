@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Apis, { authApi, endpoints } from '../configs/Apis';
 import { Button, Card, Collapse, Container, Spinner } from 'react-bootstrap';
 import { MyUserContext } from '../App';
@@ -19,7 +19,7 @@ const CourseDetail = () => {
     const [content, setContent] = useState();
     const [score, setScore] = useState();
     // const ratingNum = course.ratings.length
-
+    const nav = useNavigate();
 
     // Theo dõi trạng thái đóng mở lecture
     const toggleLecture = (id) => {
@@ -110,6 +110,10 @@ const CourseDetail = () => {
         // Logic cập nhật trạng thái khi enrolled hoặc progress thay đổi
     }, [enrolled, progress]);
 
+    const viewExercises = (courseId) => {
+        nav(`/exercises/${courseId}`);
+    };
+
     if (!course)
         return <Spinner animation="grow" />;
 
@@ -130,8 +134,13 @@ const CourseDetail = () => {
                     <h2 className='mt-3' style={{ color: '#f5896b' }}>{course.price} {donvi}</h2>
 
                     {enrolled.data ? (
-                        <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
-
+                        <>
+                            <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
+                            <Button variant="btn-primary" className="m-3 shadow"
+                                    onClick={() => viewExercises(courseId)}>
+                                See List Exercise
+                            </Button>
+                        </>
                     ) : (
                         <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
@@ -220,25 +229,17 @@ const CourseDetail = () => {
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
                                         <div class=" d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
-                                            
-
-                                                <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
-
-
-                                                
-                                            
-
-
+                                            <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
                                         </div>
                                         <div className=' mt-3 text-center'><select value={score} onChange={e => setScore(e.target.value)}>
-                                                    <option value="1">☆</option>
-                                                    <option value="2">☆☆</option>
-                                                    <option value="3">☆☆☆</option>
-                                                    <option value="4">☆☆☆☆</option>
-                                                    <option value="5">☆☆☆☆☆</option>
-                                                </select></div>
+                                            <option value="1">☆</option>
+                                            <option value="2">☆☆</option>
+                                            <option value="3">☆☆☆</option>
+                                            <option value="4">☆☆☆☆</option>
+                                            <option value="5">☆☆☆☆☆</option>
+                                        </select></div>
                                         <div class="mt-3 text-right text-center">
-                                            
+
                                             <button class="btn btn-primary btn-sm shadow-none" type="button" onClick={addRating}>Post rating</button>
                                         </div>
                                     </div>

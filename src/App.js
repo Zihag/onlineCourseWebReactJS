@@ -13,6 +13,7 @@ import { CartProvider } from './contexts/CartContext';
 import Profile from "./components/Profile";
 import Register from './components/Register'
 import Exercises from "./components/Exercise";
+import DoExercise from "./components/DoExercise";
 
 export const MyUserContext = createContext();
 // export const CartContext = createContext();
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/register" element={<Register/>}/>
             <Route path="/exercises-of-teacher/:courseId" element={<Exercises />} />
+            <Route path="/exercises/:courseId" element={<DoExercise />} />
           </Routes>
           <Footer />
         </BrowserRouter>

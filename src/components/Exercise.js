@@ -66,8 +66,6 @@ const Exercises = () => {
             }
         }
     };
-    
-
     const handleShowAddExerciseModal = () => setShowAddExerciseModal(true);
     const handleCloseAddExerciseModal =  () => {
         setShowAddExerciseModal(false);

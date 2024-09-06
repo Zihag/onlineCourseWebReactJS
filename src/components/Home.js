@@ -14,7 +14,7 @@ const Home = () => {
     const [sortBy, setSortBy] = useState('price'); // Default sorting field
     const [sortOrder, setSortOrder] = useState('asc'); // Default sorting order
     const { addToCart } = useContext(CartContext);
-    const [user] = useContext(MyUserContext); // No need for dispatch if not used
+    const [user] = useContext(MyUserContext);
     const [enrollments, setEnrollments] = useState({});
 
     useEffect(() => {
