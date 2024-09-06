@@ -1,11 +1,13 @@
-import { Card, Col, Container, ListGroup, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, ListGroup, Row } from "react-bootstrap";
 import { MyUserContext } from "../App";
 import { useContext, useEffect, useState } from "react";
 import Apis, { authApi, endpoints } from "../configs/Apis";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const [user] = useContext(MyUserContext);
     const [courses, setCourses] = useState([]);
+    const nav = useNavigate();
 
     useEffect(() => {
         const loadCoursesByUser = async () => {
@@ -23,6 +25,10 @@ const Profile = () => {
         }
     }, [user]);
 
+    if (user === null) {
+        return <h1>Bạn đã đăng xuất</h1>;
+    }
+
     return (
         <Container>
             <Row className="mt-4">
@@ -37,13 +43,13 @@ const Profile = () => {
                                 <br />
                                 <strong>Email: {user.email}</strong>
                                 <br />
-                                {user.role === "ROLE_ADMIN" ? <>
-                                    <p class="text-success">Bạn là quản trị viên</p>
-                                </> : user.role === "ROLE_STUDENT" ? <>
-                                    <p class="text-success">Bạn là học sinh</p>
-                                </> : <>
-                                    <p class="text-success">Bạn là giáo viên</p>
-                                </>}
+                                {user.role === "ROLE_ADMIN" ? (
+                                    <p className="text-success">Bạn là quản trị viên</p>
+                                ) : user.role === "ROLE_STUDENT" ? (
+                                    <p className="text-success">Bạn là học sinh</p>
+                                ) : (
+                                    <p className="text-success">Bạn là giáo viên</p>
+                                )}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -53,13 +59,18 @@ const Profile = () => {
                         <Card.Header as="h5">Khóa Học Đã Đăng Ký</Card.Header>
                         <Card.Body>
                             <ListGroup>
-                                {courses && courses.length > 0 ? (
+                                {courses.length > 0 ? (
                                     courses.map((c) => (
                                         <ListGroup.Item key={c.id}>
-                                            <img src={c.coverImg}
+                                            <img
+                                                src={c.coverImg}
+                                                alt={c.title}
                                                 style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }}
                                             />
                                             {c.title}
+                                            <Button variant="success"
+                                                className="m-3 px-4 shadow"
+                                                onClick={() => nav(`/courses/${c.id}`)}>Join</Button>
                                         </ListGroup.Item>
                                     ))
                                 ) : (

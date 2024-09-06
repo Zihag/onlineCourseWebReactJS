@@ -25,9 +25,11 @@ const Cart = () => {
 
         try {
             setLoading(true);
-            const res = await authApi().post(endpoints['enroll-multiple'], enrollmentRequest);
+            //test get data
             console.log(enrollmentRequest.userId);
             console.log(enrollmentRequest.courseIds);
+            const res = await authApi().post(endpoints['enroll-multiple'], enrollmentRequest);
+            
             if (res.status === 200) {
                 setMessage({ type: 'success', text: 'Thanh toán thành công!' });
                 clearCart();
