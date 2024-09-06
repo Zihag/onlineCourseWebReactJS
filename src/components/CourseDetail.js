@@ -22,7 +22,6 @@ const CourseDetail = () => {
 
     // const ratingNum = course.ratings.length
 
-
     // Theo dõi trạng thái đóng mở lecture
     const toggleLecture = (id) => {
         setOpenLectures(prevState => ({
@@ -117,6 +116,10 @@ const CourseDetail = () => {
         // Logic cập nhật trạng thái khi enrolled hoặc progress thay đổi
     }, [enrolled, progress]);
 
+    const viewExercises = (courseId) => {
+        nav(`/exercises/${courseId}`);
+    };
+
     if (!course)
         return <Spinner animation="grow" />;
 
@@ -137,8 +140,13 @@ const CourseDetail = () => {
                     <h2 className='mt-3' style={{ color: '#f5896b' }}>{course.price} {donvi}</h2>
 
                     {enrolled.data ? (
-                        <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
-
+                        <>
+                            <Button variant="success" className="m-3 shadow" disabled>Paid</Button>
+                            <Button variant="btn-primary" className="m-3 shadow"
+                                    onClick={() => viewExercises(courseId)}>
+                                See List Exercise
+                            </Button>
+                        </>
                     ) : (
                         <Button variant="danger" className="m-3 shadow" onClick={() => addToCart(course)}>Add to cart</Button>
                     )}
@@ -233,12 +241,7 @@ const CourseDetail = () => {
                                 {progress.data === 100 ? (
                                     <div class="bg-light p-2">
                                         <div class=" d-flex flex-row align-items-start"><img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40" />
-
-
                                             <textarea value={content} onChange={e => setContent(e.target.value)} class="form-control ml-1 shadow-none textarea" placeholder='Enter rating'></textarea>
-
-
-
 
 
 
