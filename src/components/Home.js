@@ -141,6 +141,12 @@ const Home = () => {
                                     <Card.Img variant="top" src={c.coverImg} alt="img" style={{ height: '20rem' }} />
                                     <Card.Body>
                                         <Card.Title className="two-line-height">{c.title}</Card.Title>
+                                        {user == null ? <>
+                                            <Button
+                                                variant="info"
+                                                className="m-3 px-4 shadow"
+                                                onClick={() => nav(`/courses/${c.id}`)}>Detail</Button>
+                                        </>: <></>}
                                         {user !== null && user.role === "ROLE_STUDENT" ? <>
                                             <Card.Subtitle className="mb-2 text-muted">
                                                 <span className="custom-subtitle shadow rounded">{c.price} {donvi}</span>
